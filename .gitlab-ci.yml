@@ -1,5 +1,3 @@
-image: registry.gitlab.com/galvanize-labs/instructors/aws-kubernetes-cluster/base-aws-eks-image:latest
-
 stages:
   - deploy
 deploy_staging:
@@ -7,6 +5,7 @@ deploy_staging:
   environment: staging
   only:
     - test
+  image: registry.gitlab.com/galvanize-labs/instructors/aws-kubernetes-cluster/base-aws-eks-image:latest
   before_script:
     - export IMAGE="$CI_REGISTRY_IMAGE":"$CI_PIPELINE_IID"
     - aws configure set region us-west-2
