@@ -18,21 +18,21 @@ deploy_staging:
     - kubectl apply -f logstash/logstash-cm.yaml
     - kubectl apply -f logstash/logstash-deploy.yaml
     - kubectl apply -f logstash/logstash-service.yml
-    - kubectl apply -f mysql/mysql-db-svc.yaml
-    - envsubst < k8s-deploy.yaml | kubectl apply -f -
-    - kubectl apply -f k8s-service.yaml
-deploy_prod:
-  stage: deploy
-  environment: production
-  only:
-    - master
-  image: registry.gitlab.com/galv-vmw-apr-2021/capstone/base-aws-eks-image:latest
-  before_script:
-    - export IMAGE="$CI_REGISTRY_IMAGE":"$CI_PIPELINE_IID"
-    - aws configure set region us-west-2
-    - aws configure set output json
-    - aws eks update-kubeconfig --name "$CLUSTER_NAME"
-    - aws sts get-caller-identity
-  script:
-    - envsubst < k8s-deploy.yaml | kubectl apply -f -
-    - kubectl apply -f k8s-service.yaml
+    # # - kubectl apply -f mysql/mysql-db-svc.yaml
+    # - envsubst < k8s-deploy.yaml | kubectl apply -f -
+    # - kubectl apply -f k8s-service.yaml
+# deploy_prod:
+#   stage: deploy
+#   environment: production
+#   only:
+#     - master
+#   image: registry.gitlab.com/galv-vmw-apr-2021/capstone/base-aws-eks-image:latest
+#   before_script:
+#     - export IMAGE="$CI_REGISTRY_IMAGE":"$CI_PIPELINE_IID"
+#     - aws configure set region us-west-2
+#     - aws configure set output json
+#     - aws eks update-kubeconfig --name "$CLUSTER_NAME"
+#     - aws sts get-caller-identity
+#   script:
+#     - envsubst < k8s-deploy.yaml | kubectl apply -f -
+#     - kubectl apply -f k8s-service.yaml
