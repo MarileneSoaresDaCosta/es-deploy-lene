@@ -52,8 +52,8 @@ spec:
     configMap:
       name: logstash-configmap
       items:
-        - key: logstash.conf
-          path: logstash.conf
+        - key: logstash.users.conf
+          path: logstash.users.conf
   - name: cert-ca
     secret:
       secretName: es1-es-http-certs-public

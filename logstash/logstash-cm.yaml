@@ -6,7 +6,36 @@ data:
   logstash.yml: |
     http.host: "0.0.0.0"
     path.config: /usr/share/logstash/pipeline
-  logstash.conf: |
+  logstash.users.conf: |
+    input {
+      jdbc { 
+        jdbc_connection_string => "jdbc:mysql://${DB_HOST}:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true"
+        jdbc_driver_library => "/usr/share/logstash/logstash-core/lib/jars/mysql-connector-java.jar"
+        jdbc_driver_class => "com.mysql.cj.jdbc.Driver"
+        # The user we wish to execute our statement as
+        jdbc_user => "${DB_USER}"
+        jdbc_password => "${DB_PASSWORD}"
+        # our query
+        schedule => "* * * * *"
+        statement => "SELECT * FROM user WHERE createdAt > :sql_last_value ORDER BY createdAt;" # TODO: verify 
+        use_column_value => true
+        tracking_column => "createdat"
+        last_run_metadata_path => "$HOME/.logstash-users_jdbc_last_run"
+      }
+    }
+    output {
+      stdout { codec => json_lines }
+      elasticsearch {
+        hosts => [ "${ES_HOST}" ]
+        user => "${ES_USER}"
+        password => "${ES_PASSWORD}"
+        index => "users"
+        document_id => "%{id}"
+        ecs_compatibility => v1
+        cacert => "/etc/logstash/certificates/ca.crt"
+      }
+    }
+  logstash.products.conf: |
     input {
       jdbc { 
         jdbc_connection_string => "jdbc:mysql://${DB_HOST}:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true"
@@ -20,6 +49,7 @@ data:
         statement => "SELECT * FROM testtable WHERE Date > :sql_last_value ORDER BY Date;"
         use_column_value => true
         tracking_column => "date" 
+        last_run_metadata_path => "$HOME/.logstash_jdbc_last_run"
       }
     }
     output {
@@ -34,5 +64,3 @@ data:
         cacert => "/etc/logstash/certificates/ca.crt"
       }
     }
-
-    

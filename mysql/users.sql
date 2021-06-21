@@ -1,0 +1,1 @@
+create table user (id int not null auto_increment primary key, userName varchar(255) not null, createdAt timestamp default current_timestamp not null) auto_increment = 1;
