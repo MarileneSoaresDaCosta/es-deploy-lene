@@ -13,10 +13,7 @@ spec:
     - containerPort: 5044
     env:
     - name: DB_HOST
-      valueFrom: 
-        secretKeyRef:
-          name: bakery-db-secrets
-          key: DB_HOST
+      value: "$BAKERY_DB_HOST"
     - name: DB_PORT
       value: "3306"
     - name: DB_NAME
