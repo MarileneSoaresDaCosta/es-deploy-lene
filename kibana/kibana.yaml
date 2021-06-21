@@ -33,6 +33,9 @@ spec:
       containers:
         - name: kibana
           resources:
-            limits:
+            requests:
               memory: 1Gi
-              cpu: 1
+              cpu: 0.5
+            limits:
+              memory: 2.5Gi
+              cpu: 2
