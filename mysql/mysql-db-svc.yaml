@@ -5,4 +5,4 @@ metadata:
   namespace: external
 spec: 
   type: ExternalName
-  ExternalName: $BAKERY_DB_HOST
+  externalName: "$BAKERY_DB_HOST"
