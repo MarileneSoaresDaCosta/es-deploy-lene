@@ -1,0 +1,39 @@
+image: registry.gitlab.com/galvanize-labs/instructors/aws-kubernetes-cluster/base-aws-eks-image:latest
+
+stages:
+  - deploy
+deploy_staging:
+  stage: deploy
+  environment: staging
+  only:
+    - test
+  before_script:
+    - export IMAGE="$CI_REGISTRY_IMAGE":"$CI_PIPELINE_IID"
+    - aws configure set region us-west-2
+    - aws configure set output json
+    - aws eks update-kubeconfig --name "$TEST_CLUSTER_NAME"
+    - aws sts get-caller-identity
+  script:
+    - kubectl apply -f elasticsearch/all-in-one-1.3.2.yaml
+    - kubectl apply -f elasticsearch/es1.yaml
+    - kubectl apply -f logstash/logstash-cm.yaml
+    - kubectl apply -f logstash/logstash-deploy.yaml
+    - kubectl apply -f logstash/logstash-service.yml
+    - kubectl apply -f mysql/mysql-db-svc.yaml
+    - envsubst < k8s-deploy.yaml | kubectl apply -f -
+    - kubectl apply -f k8s-service.yaml
+deploy_prod:
+  stage: deploy
+  environment: production
+  only:
+    - master
+  image: registry.gitlab.com/galvanize-labs/instructors/aws-kubernetes-cluster/base-aws-eks-image:latest
+  before_script:
+    - export IMAGE="$CI_REGISTRY_IMAGE":"$CI_PIPELINE_IID"
+    - aws configure set region us-west-2
+    - aws configure set output json
+    - aws eks update-kubeconfig --name "$CLUSTER_NAME"
+    - aws sts get-caller-identity
+  script:
+    - envsubst < k8s-deploy.yaml | kubectl apply -f -
+    - kubectl apply -f k8s-service.yaml

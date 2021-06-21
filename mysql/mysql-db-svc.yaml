@@ -5,4 +5,4 @@ metadata:
   namespace: external
 spec: 
   type: ExternalName
-  ExternalName: 172.17.0.2
+  ExternalName: $BAKERY_DB_HOST

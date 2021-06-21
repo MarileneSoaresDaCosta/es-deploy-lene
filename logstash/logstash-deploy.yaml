@@ -13,15 +13,15 @@ spec:
     - containerPort: 5044
     env:
     - name: DB_HOST
-      value: mysql
+      value: mysql-db-svc
     - name: DB_PORT
       value: "3306"
     - name: DB_NAME
-      value: "testdb"
+      value: "$BAKERY_DB_NAME"
     - name: DB_USER
-      value: "test_user"
+      value: "$BAKERY_DB_USER"
     - name: DB_PASSWORD
-      value: "plantlife"
+      value: "$BAKERY_DB_PWD"
     - name: ES_HOST
       value: "https://es1-es-http:9200"
     - name: ES_USER
