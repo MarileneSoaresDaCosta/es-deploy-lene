@@ -13,7 +13,10 @@ spec:
     - containerPort: 5044
     env:
     - name: DB_HOST
-      value: mysql-db-svc
+      valueFrom: 
+        secretKeyRef:
+          name: bakery-db-secrets
+          key: DB_HOST
     - name: DB_PORT
       value: "3306"
     - name: DB_NAME
