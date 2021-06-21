@@ -16,6 +16,7 @@ deploy_staging:
     - kubectl apply -f elasticsearch/all-in-one-1.3.2.yaml
     - kubectl apply -f elasticsearch/es1.yaml
     - kubectl apply -f logstash/logstash-cm.yaml
+    - kubectl delete pod logstash
     - envsubst < logstash/logstash-deploy.yaml | kubectl apply -f -
     - kubectl apply -f logstash/logstash-service.yml
     # # - kubectl apply -f mysql/mysql-db-svc.yaml
