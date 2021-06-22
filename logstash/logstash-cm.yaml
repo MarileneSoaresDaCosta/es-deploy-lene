@@ -46,20 +46,20 @@ data:
         jdbc_password => "${DB_PASSWORD}"
         # our query
         schedule => "* * * * *"
-        statement => "SELECT * FROM testtable WHERE Date > :sql_last_value ORDER BY Date;"
+        statement => "SELECT product_id as id, p.name, description, image, price, shippable, creation_date_time as created_at, s.store_name FROM products p LEFT JOIN stores s ON p.product_id = s.store_id WHERE created_at > :sql_last_value ORDER BY created_at;"
         use_column_value => true
-        tracking_column => "date" 
-        last_run_metadata_path => "$HOME/.logstash_jdbc_last_run"
+        tracking_column => "created_at" 
+        last_run_metadata_path => "$HOME/.logstash-products_jdbc_last_run"
       }
     }
     output {
-      stdout { codec => json_lines }
+      stdout { codec => rubydebug }
       elasticsearch {
         hosts => [ "${ES_HOST}" ]
         user => "${ES_USER}"
         password => "${ES_PASSWORD}"
-        index => "test-migrate"
-        document_id => "%{personid}"
+        index => "products"
+        document_id => "%{id}"
         ecs_compatibility => v1
         cacert => "/etc/logstash/certificates/ca.crt"
       }
