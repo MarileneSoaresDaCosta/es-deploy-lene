@@ -6,6 +6,11 @@ data:
   logstash.yml: |
     http.host: "0.0.0.0"
     path.config: /usr/share/logstash/pipeline
+  pipelines.yaml: |
+    - pipeline.id: "users"
+    path.config: "/usr/share/logstash/pipeline/logstash.users.conf"
+    - pipeline.id: "products"
+    path.config: "/usr/share/logstash/pipeline/logstash.products.conf"
   logstash.users.conf: |
     input {
       jdbc { 

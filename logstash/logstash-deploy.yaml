@@ -48,6 +48,12 @@ spec:
         items:
           - key: logstash.yml
             path: logstash.yml
+    - name: config-volume
+      configMap:
+        name: logstash-configmap
+        items:
+          - key: pipelines.yaml
+            path: pipelines.yaml
     - name: logstash-pipeline-volume
       configMap:
         name: logstash-configmap
