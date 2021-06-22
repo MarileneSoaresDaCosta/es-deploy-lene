@@ -20,7 +20,7 @@ data:
         statement => "SELECT u.id, avatar, first_name, last_name, username, verified, created_at, zipcode FROM users u LEFT JOIN address a ON u.id = a.user_id WHERE created_at > :sql_last_value ORDER BY created_at;" 
         use_column_value => true
         tracking_column => "created_at"
-        last_run_metadata_path => "$HOME/.logstash-users_jdbc_last_run"
+        last_run_metadata_path => "/usr/share/logstash/.logstash-users_jdbc_last_run"
       }
     }
     output {
@@ -46,10 +46,10 @@ data:
         jdbc_password => "${DB_PASSWORD}"
         # our query
         schedule => "* * * * *"
-        statement => "SELECT product_id as id, p.name, description, image, price, shippable, creation_date_time as created_at, s.store_name FROM products p LEFT JOIN stores s ON p.product_id = s.store_id WHERE created_at > :sql_last_value ORDER BY created_at;"
+        statement => "SELECT product_id as id, p.name, description, image, price, shippable, creation_date_time as created_at, s.store_name FROM products p LEFT JOIN stores s ON p.product_id = s.store_id WHERE creation_date_time > :sql_last_value ORDER BY creation_date_time;"
         use_column_value => true
-        tracking_column => "created_at" 
-        last_run_metadata_path => "$HOME/.logstash-products_jdbc_last_run"
+        tracking_column => "creation_date_time" 
+        last_run_metadata_path => "/usr/share/logstash/.logstash-products_jdbc_last_run"
       }
     }
     output {
