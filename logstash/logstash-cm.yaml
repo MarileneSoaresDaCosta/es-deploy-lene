@@ -17,7 +17,7 @@ data:
         jdbc_password => "${DB_PASSWORD}"
         # our query
         schedule => "* * * * *"
-        statement => "SELECT * FROM user WHERE createdAt > :sql_last_value ORDER BY createdAt;" # TODO: verify 
+        statement => "SELECT * FROM users WHERE createdAt > :sql_last_value ORDER BY createdAt;" 
         use_column_value => true
         tracking_column => "createdat"
         last_run_metadata_path => "$HOME/.logstash-users_jdbc_last_run"
