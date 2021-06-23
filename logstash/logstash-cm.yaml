@@ -5,12 +5,11 @@ metadata:
 data:
   logstash.yml: |
     http.host: "0.0.0.0"
-    path.config: /usr/share/logstash/pipeline
-  pipelines.yaml: |
-    - pipeline.id: "users"
-    path.config: "/usr/share/logstash/pipeline/logstash.users.conf"
-    - pipeline.id: "products"
-    path.config: "/usr/share/logstash/pipeline/logstash.products.conf"
+  pipelines.yml: |
+    - pipeline.id: users
+      path.config: /usr/share/logstash/pipeline/logstash.users.conf
+    - pipeline.id: products
+      path.config: /usr/share/logstash/pipeline/logstash.products.conf
   logstash.users.conf: |
     input {
       jdbc { 
@@ -51,9 +50,9 @@ data:
         jdbc_password => "${DB_PASSWORD}"
         # our query
         schedule => "* * * * *"
-        statement => "SELECT product_id as id, p.name, description, image, price, shippable, creation_date_time as created_at, s.store_name FROM products p LEFT JOIN stores s ON p.product_id = s.store_id WHERE creation_date_time > :sql_last_value ORDER BY creation_date_time;"
+        statement => "SELECT product_id as id, p.name, description, image, price, shippable, p.creation_date_time as created_at, s.store_name FROM products p LEFT JOIN stores s ON p.product_id = s.store_id WHERE p.creation_date_time > :sql_last_value ORDER BY p.creation_date_time;"
         use_column_value => true
-        tracking_column => "creation_date_time" 
+        tracking_column => "created_at" 
         last_run_metadata_path => "/usr/share/logstash/.logstash-products_jdbc_last_run"
       }
     }
