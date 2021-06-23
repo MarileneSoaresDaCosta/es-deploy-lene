@@ -10,6 +10,8 @@ data:
       path.config: /usr/share/logstash/pipeline/logstash.users.conf
     - pipeline.id: products
       path.config: /usr/share/logstash/pipeline/logstash.products.conf
+    - pipeline.id: content
+      path.config: /usr/share/logstash/pipeline/logstash.content.conf
   logstash.users.conf: |
     input {
       jdbc { 
@@ -63,6 +65,35 @@ data:
         user => "${ES_USER}"
         password => "${ES_PASSWORD}"
         index => "products"
+        document_id => "%{id}"
+        ecs_compatibility => v1
+        cacert => "/etc/logstash/certificates/ca.crt"
+      }
+    }
+  logstash.content.conf: |
+    input {
+      jdbc { 
+        jdbc_connection_string => "jdbc:mysql://${DB_HOST}:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true"
+        jdbc_driver_library => "/usr/share/logstash/logstash-core/lib/jars/mysql-connector-java.jar"
+        jdbc_driver_class => "com.mysql.cj.jdbc.Driver"
+        # The user we wish to execute our statement as
+        jdbc_user => "${DB_USER}"
+        jdbc_password => "${DB_PASSWORD}"
+        # our query
+        schedule => "* * * * *"
+        statement => "SELECT p.id, p.createdAt, p.dateEdited, p.body, p.title, p.visibility, p.postType, p.primaryImage, u.username FROM posts p LEFT JOIN users u ON u.id = p.userId LEFT JOIN tags t ON p.id = t.post_id"
+        use_column_value => true
+        tracking_column => "dateedited" 
+        last_run_metadata_path => "/usr/share/logstash/.logstash-content_jdbc_last_run"
+      }
+    }
+    output {
+      stdout { codec => rubydebug }
+      elasticsearch {
+        hosts => [ "${ES_HOST}" ]
+        user => "${ES_USER}"
+        password => "${ES_PASSWORD}"
+        index => "content"
         document_id => "%{id}"
         ecs_compatibility => v1
         cacert => "/etc/logstash/certificates/ca.crt"
