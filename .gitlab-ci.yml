@@ -39,6 +39,6 @@ deploy_prod:
     - kubectl apply -f elasticsearch/es1.yaml
     - kubectl apply -f kibana/kibana.yaml
     - kubectl apply -f logstash/logstash-cm.yaml
-    - kubectl delete pod logstash
+    # - kubectl delete pod logstash
     - envsubst < logstash/logstash-deploy.yaml | kubectl apply -f -
     - kubectl apply -f logstash/logstash-service.yml
