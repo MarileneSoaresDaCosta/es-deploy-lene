@@ -58,8 +58,8 @@ spec:
             path: logstash.users.conf
           - key: logstash.products.conf
             path: logstash.products.conf
-          # - key: logstash.content.conf
-          #   path: logstash.content.conf
+          - key: logstash.content.conf
+            path: logstash.content.conf
           # - key: logstash.comments.conf
           #   path: logstash.comments.conf
     - name: cert-ca
