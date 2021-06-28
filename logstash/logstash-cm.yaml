@@ -94,6 +94,7 @@ data:
           map['id'] ||= event.get('id')
           map['created_at'] ||= event.get('created_at')
           map['date_edited'] ||= event.get('date_edited')
+          map['title'] ||= event.get('title')
           map['body'] ||= event.get('body')
           map['visibility'] ||= event.get('visibility')
           map['primary_image'] ||= event.get('primary_image')
