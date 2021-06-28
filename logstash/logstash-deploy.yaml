@@ -6,56 +6,64 @@ metadata:
   name: logstash
 spec:
   containers:
-  - image: dezrogers/logstash-mysql-jdbc:latest
-    name: logstash
-    ports:
-    - containerPort: 25826
-    - containerPort: 5044
-    env:
-    - name: DB_HOST
-      value: mysql-db-svc
-    - name: DB_PORT
-      value: "3306"
-    - name: DB_NAME
-      value: "$BAKERY_DB_NAME"
-    - name: DB_USER
-      value: "$BAKERY_DB_USER"
-    - name: DB_PASSWORD
-      value: "$BAKERY_DB_PWD"
-    - name: ES_HOST
-      value: "https://es1-es-http:9200"
-    - name: ES_USER
-      value: "elastic"
-    - name: ES_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: es1-es-elastic-user
-          key: elastic
-    resources: {}
-    volumeMounts:
-    - name: config-volume
-      mountPath: /usr/share/logstash/config
-    - name: logstash-pipeline-volume
-      mountPath: /usr/share/logstash/pipeline
-    - name: cert-ca
-      mountPath: "/etc/logstash/certificates"
-      readOnly: true
+    - image: dezrogers/logstash-mysql-jdbc:latest
+      name: logstash
+      ports:
+        - containerPort: 25826
+        - containerPort: 5044
+      env:
+        - name: DB_HOST
+          value: "$BAKERY_DB_HOST"
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_NAME
+          value: "$BAKERY_DB_NAME"
+        - name: DB_USER
+          value: "$BAKERY_DB_USER"
+        - name: DB_PASSWORD
+          value: "$BAKERY_DB_PASSWORD"
+        - name: ES_HOST
+          value: "https://es1-es-http:9200"
+        - name: ES_USER
+          value: "elastic"
+        - name: ES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: es1-es-elastic-user
+              key: elastic
+      resources: {}
+      volumeMounts:
+        - name: config-volume
+          mountPath: /usr/share/logstash/config
+        - name: logstash-pipeline-volume
+          mountPath: /usr/share/logstash/pipeline
+        - name: cert-ca
+          mountPath: "/etc/logstash/certificates"
+          readOnly: true
   restartPolicy: OnFailure
   volumes:
-  - name: config-volume
-    configMap:
-      name: logstash-configmap
-      items:
-        - key: logstash.yml
-          path: logstash.yml
-  - name: logstash-pipeline-volume
-    configMap:
-      name: logstash-configmap
-      items:
-        - key: logstash.users.conf
-          path: logstash.users.conf
-  - name: cert-ca
-    secret:
-      secretName: es1-es-http-certs-public
+    - name: config-volume
+      configMap:
+        name: logstash-configmap
+        items:
+          - key: logstash.yml
+            path: logstash.yml
+          - key: pipelines.yml
+            path: pipelines.yml
+    - name: logstash-pipeline-volume
+      configMap:
+        name: logstash-configmap
+        items:
+          - key: logstash.users.conf
+            path: logstash.users.conf
+          - key: logstash.products.conf
+            path: logstash.products.conf
+          # - key: logstash.content.conf
+          #   path: logstash.content.conf
+          # - key: logstash.comments.conf
+          #   path: logstash.comments.conf
+    - name: cert-ca
+      secret:
+        secretName: es1-es-http-certs-public
 
-status: {} 
+status: {}

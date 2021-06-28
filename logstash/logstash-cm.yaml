@@ -5,7 +5,13 @@ metadata:
 data:
   logstash.yml: |
     http.host: "0.0.0.0"
-    path.config: /usr/share/logstash/pipeline
+  pipelines.yml: |
+    - pipeline.id: users
+      path.config: /usr/share/logstash/pipeline/logstash.users.conf
+    - pipeline.id: products
+      path.config: /usr/share/logstash/pipeline/logstash.products.conf
+    - pipeline.id: content
+      path.config: /usr/share/logstash/pipeline/logstash.content.conf
   logstash.users.conf: |
     input {
       jdbc { 
@@ -17,10 +23,10 @@ data:
         jdbc_password => "${DB_PASSWORD}"
         # our query
         schedule => "* * * * *"
-        statement => "SELECT * FROM user WHERE createdAt > :sql_last_value ORDER BY createdAt;" # TODO: verify 
+        statement => "SELECT u.id, avatar, first_name, last_name, username, verified, created_at, zipcode FROM users u LEFT JOIN address a ON u.id = a.user_id WHERE created_at > :sql_last_value ORDER BY created_at;" 
         use_column_value => true
-        tracking_column => "createdat"
-        last_run_metadata_path => "$HOME/.logstash-users_jdbc_last_run"
+        tracking_column => "created_at"
+        last_run_metadata_path => "/usr/share/logstash/.logstash-users_jdbc_last_run"
       }
     }
     output {
@@ -46,20 +52,78 @@ data:
         jdbc_password => "${DB_PASSWORD}"
         # our query
         schedule => "* * * * *"
-        statement => "SELECT * FROM testtable WHERE Date > :sql_last_value ORDER BY Date;"
+        statement => "SELECT product_id as id, p.name, description, image, price, shippable, p.creation_date_time as created_at, s.store_name FROM products p LEFT JOIN stores s ON p.product_id = s.store_id WHERE p.creation_date_time > :sql_last_value ORDER BY p.creation_date_time;"
         use_column_value => true
-        tracking_column => "date" 
-        last_run_metadata_path => "$HOME/.logstash_jdbc_last_run"
+        tracking_column => "created_at" 
+        last_run_metadata_path => "/usr/share/logstash/.logstash-products_jdbc_last_run"
       }
     }
     output {
-      stdout { codec => json_lines }
+      stdout { codec => rubydebug }
       elasticsearch {
         hosts => [ "${ES_HOST}" ]
         user => "${ES_USER}"
         password => "${ES_PASSWORD}"
-        index => "test-migrate"
-        document_id => "%{personid}"
+        index => "products"
+        document_id => "%{id}"
+        ecs_compatibility => v1
+        cacert => "/etc/logstash/certificates/ca.crt"
+      }
+    }
+  logstash.content.conf: |
+    input {
+      jdbc { 
+        jdbc_connection_string => "jdbc:mysql://${DB_HOST}:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true"
+        jdbc_driver_library => "/usr/share/logstash/logstash-core/lib/jars/mysql-connector-java.jar"
+        jdbc_driver_class => "com.mysql.cj.jdbc.Driver"
+        # The user we wish to execute our statement as
+        jdbc_user => "${DB_USER}"
+        jdbc_password => "${DB_PASSWORD}"
+        # our query
+        schedule => "* * * * *"
+        statement => "SELECT p.id, p.createdAt, p.dateEdited, p.body, p.title, p.visibility, p.postType, p.primaryImage, u.username FROM posts p LEFT JOIN users u ON u.id = p.userId LEFT JOIN tags t ON p.id = t.post_id WHERE p.dateEdited > :sql_last_value ORDER BY p.dateEdited;"
+        use_column_value => true
+        tracking_column => "dateedited" 
+        last_run_metadata_path => "/usr/share/logstash/.logstash-content_jdbc_last_run"
+      }
+    }
+    output {
+      stdout { codec => rubydebug }
+      elasticsearch {
+        hosts => [ "${ES_HOST}" ]
+        user => "${ES_USER}"
+        password => "${ES_PASSWORD}"
+        index => "content"
+        document_id => "%{id}"
+        ecs_compatibility => v1
+        cacert => "/etc/logstash/certificates/ca.crt"
+      }
+    }
+  logstash.comments.conf: |
+    input {
+      jdbc { 
+        jdbc_connection_string => "jdbc:mysql://${DB_HOST}:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true"
+        jdbc_driver_library => "/usr/share/logstash/logstash-core/lib/jars/mysql-connector-java.jar"
+        jdbc_driver_class => "com.mysql.cj.jdbc.Driver"
+        # The user we wish to execute our statement as
+        jdbc_user => "${DB_USER}"
+        jdbc_password => "${DB_PASSWORD}"
+        # our query
+        schedule => "* * * * *"
+        statement => "SELECT c.id, c.text, c.created_at, c.updatedAt, p.title, p.content_id, u.username FROM comments c LEFT JOIN users u ON c.user_id = u.id LEFT JOIN posts p ON c.content_id = p.id WHERE c.updatedAt > :sql_last_value ORDER BY c.updatedAt;"
+        use_column_value => true
+        tracking_column => "updatedat" 
+        last_run_metadata_path => "/usr/share/logstash/.logstash-comments_jdbc_last_run"
+      }
+    }
+    output {
+      stdout { codec => rubydebug }
+      elasticsearch {
+        hosts => [ "${ES_HOST}" ]
+        user => "${ES_USER}"
+        password => "${ES_PASSWORD}"
+        index => "comments"
+        document_id => "%{id}"
         ecs_compatibility => v1
         cacert => "/etc/logstash/certificates/ca.crt"
       }
