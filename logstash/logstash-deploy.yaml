@@ -60,8 +60,8 @@ spec:
             path: logstash.products.conf
           - key: logstash.content.conf
             path: logstash.content.conf
-          # - key: logstash.comments.conf
-          #   path: logstash.comments.conf
+          - key: logstash.comments.conf
+            path: logstash.comments.conf
     - name: cert-ca
       secret:
         secretName: es1-es-http-certs-public

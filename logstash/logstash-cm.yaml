@@ -12,6 +12,8 @@ data:
       path.config: /usr/share/logstash/pipeline/logstash.products.conf
     - pipeline.id: content
       path.config: /usr/share/logstash/pipeline/logstash.content.conf
+    - pipeline.id: comments
+      path.config: /usr/share/logstash/pipeline/logstash.comments.conf
   logstash.users.conf: |
     input {
       jdbc { 
@@ -130,9 +132,9 @@ data:
         jdbc_password => "${DB_PASSWORD}"
         # our query
         schedule => "* * * * *"
-        statement => "SELECT c.id, c.text, c.created_at, c.updatedAt, p.title, p.content_id, u.username FROM comments c LEFT JOIN users u ON c.user_id = u.id LEFT JOIN posts p ON c.content_id = p.id WHERE c.updatedAt > :sql_last_value ORDER BY c.updatedAt;"
+        statement => "SELECT c.id, c.text, c.created_at, c.updated_at, p.title, p.id, u.username FROM comments c LEFT JOIN users u ON c.user_id = u.id LEFT JOIN posts p ON c.content_id = p.id WHERE c.updated_at > :sql_last_value ORDER BY c.updatedAt;"
         use_column_value => true
-        tracking_column => "updatedat" 
+        tracking_column => "updated_at" 
         last_run_metadata_path => "/usr/share/logstash/.logstash-comments_jdbc_last_run"
       }
     }
@@ -149,4 +151,4 @@ data:
       }
     }
 
-    SELECT p.id, p.created_at, p.date_edited, p.body, p.title, p.visibility, p.primary_image_id, u.username, t.tag_id as tag FROM posts p LEFT JOIN users u ON u.id = p.user_id LEFT JOIN post_tag t ON p.id = t.post_id;
+    
