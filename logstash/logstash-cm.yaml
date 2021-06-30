@@ -129,7 +129,7 @@ data:
         jdbc_password => "${DB_PASSWORD}"
         # our query
         schedule => "* * * * *"
-        statement => "SELECT c.id, c.text, c.created_at, c.updated_at, p.title, p.id, u.username FROM comments c LEFT JOIN users u ON c.user_id = u.id LEFT JOIN posts p ON c.content_id = p.id WHERE c.updated_at > :sql_last_value ORDER BY c.updatedAt;"
+        statement => "SELECT c.id, c.text, c.created_at, c.updated_at, p.title, p.id, u.username FROM comments c LEFT JOIN users u ON c.user_id = u.id LEFT JOIN posts p ON c.content_id = p.id WHERE c.updated_at > :sql_last_value ORDER BY c.updated_at;"
         use_column_value => true
         tracking_column => "updated_at" 
         last_run_metadata_path => "/usr/share/logstash/.logstash-comments_jdbc_last_run"
