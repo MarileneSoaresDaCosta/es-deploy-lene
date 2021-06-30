@@ -25,9 +25,9 @@ data:
         jdbc_password => "${DB_PASSWORD}"
         # our query
         schedule => "* * * * *"
-        statement => "SELECT u.id, avatar, first_name, last_name, username, verified, created_at, zipcode FROM users u LEFT JOIN address a ON u.id = a.user_id WHERE created_at > :sql_last_value ORDER BY created_at;" 
+        statement => "SELECT u.id, avatar, first_name, last_name, username, verified, created_at, updated_at, zipcode FROM users u LEFT JOIN address a ON u.id = a.user_id WHERE updated_at > :sql_last_value ORDER BY updated_at;" 
         use_column_value => true
-        tracking_column => "created_at"
+        tracking_column => "updated_at"
         last_run_metadata_path => "/usr/share/logstash/.logstash-users_jdbc_last_run"
       }
     }
