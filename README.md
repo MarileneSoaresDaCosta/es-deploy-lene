@@ -136,9 +136,20 @@ spec:
 
 ## Deployment
 
+After you have access to the [staging](#staging) or [production](#production) cluster, if you want to manually setup an instance of elasticsearch with kibana and logstash or quickly update the configuration - without the CI pipeline automation, run `kubectl apply -f <filename>` for the respective YAML file.
+
+Deployment Sequence:
+
+1. `all-in-one-1.3.2.yaml`
+2. `es1.yaml`
+3. `logstash-cm.yaml`
+4. `logstash-deploy.yaml`
+5. `logstash-service.yml`
+6. `kibana.yaml` (optional)
+
 ### Staging
 
-The job to deploy to the `vmw-test-cluster` runs when changes are merged into the `test` branch. You can gain access to the main cluster `vmw-test-cluster` using awscli with:
+The job to deploy to the `vmw-test-cluster` runs when changes are merged into the `test` branch. You can gain access to the test cluster `vmw-test-cluster` using awscli with:
 
 ```
 aws eks update-kubeconfig --name vmw-test-cluster
