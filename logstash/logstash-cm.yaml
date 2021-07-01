@@ -100,7 +100,7 @@ data:
           map['primary_image'] ||= event.get('primary_image')
           map['username'] ||= event.get('username')
           map['tags'] ||= []
-          map['tags'] << {'tag' => event.get('tag')}
+          map['tags'] << {'name' => event.get('tag')}
           event.cancel()
         "
         push_previous_map_as_event => true
