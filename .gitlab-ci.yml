@@ -17,8 +17,7 @@ deploy_staging:
     - kubectl apply -f elasticsearch/es1.yaml
     - kubectl apply -f kibana/kibana.yaml
     - kubectl apply -f logstash/logstash-cm.yaml
-    - kubectl delete pod logstash
-    - envsubst < logstash/logstash-deploy.yaml | kubectl apply -f -
+    - envsubst < logstash/logstash-deploy.yaml | kubectl replace -f -
     - kubectl apply -f logstash/logstash-service.yml
 deploy_prod:
   stage: deploy
