@@ -25,9 +25,9 @@ data:
         jdbc_password => "${DB_PASSWORD}"
         # our query
         schedule => "* * * * *"
-        statement => "SELECT u.id, avatar, first_name, last_name, username, verified, created_at, zipcode FROM users u LEFT JOIN address a ON u.id = a.user_id WHERE created_at > :sql_last_value ORDER BY created_at;" 
+        statement => "SELECT u.id, avatar, first_name, last_name, username, verified, created_at, updated_at, zipcode FROM users u LEFT JOIN address a ON u.id = a.user_id WHERE updated_at > :sql_last_value ORDER BY updated_at;" 
         use_column_value => true
-        tracking_column => "created_at"
+        tracking_column => "updated_at"
         last_run_metadata_path => "/usr/share/logstash/.logstash-users_jdbc_last_run"
       }
     }
@@ -53,9 +53,9 @@ data:
         jdbc_password => "${DB_PASSWORD}"
         # our query
         schedule => "* * * * *"
-        statement => "SELECT product_id as id, p.name, description, image, price, shippable, p.creation_date_time as created_at, s.store_name FROM products p LEFT JOIN stores s ON p.product_id = s.store_id WHERE p.creation_date_time > :sql_last_value ORDER BY p.creation_date_time;"
+        statement => "SELECT product_id as id, p.name, description, image, price, shippable, p.creation_date_time as created_at, p.updated_at, s.store_name FROM products p LEFT JOIN stores s ON p.product_id = s.store_id WHERE p.updated_at > :sql_last_value ORDER BY p.updated_at;"
         use_column_value => true
-        tracking_column => "created_at" 
+        tracking_column => "updated_at" 
         last_run_metadata_path => "/usr/share/logstash/.logstash-products_jdbc_last_run"
       }
     }
@@ -100,7 +100,7 @@ data:
           map['primary_image'] ||= event.get('primary_image')
           map['username'] ||= event.get('username')
           map['tags'] ||= []
-          map['tags'] << {'tag' => event.get('tag')}
+          map['tags'] << {'name' => event.get('tag')}
           event.cancel()
         "
         push_previous_map_as_event => true
