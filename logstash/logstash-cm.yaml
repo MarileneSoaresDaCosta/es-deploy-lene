@@ -81,7 +81,7 @@ data:
         jdbc_password => "${DB_PASSWORD}"
         # our query
         schedule => "* * * * *"
-        statement => "SELECT p.id, p.created_at, p.date_edited, p.body, p.title, p.visibility, p.primary_image_id, u.username, t.tag_id as tag FROM posts p LEFT JOIN users u ON u.id = p.user_id LEFT JOIN post_tag t ON p.id = t.post_id;"
+        statement => "SELECT p.id, p.created_at, p.date_edited, p.body, p.title, p.visibility, p.primary_image_id, u.username, t.tag_id as tag FROM posts p LEFT JOIN users u ON u.id = p.user_id LEFT JOIN post_tag t ON p.id = t.post_id WHERE p.date_edited > :sql_last_value ORDER BY p.date_edited;"
         use_column_value => true
         tracking_column => "date_edited" 
         last_run_metadata_path => "/usr/share/logstash/.logstash-content_jdbc_last_run"
