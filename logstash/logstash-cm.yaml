@@ -81,7 +81,7 @@ data:
         jdbc_password => "${DB_PASSWORD}"
         # our query
         schedule => "* * * * *"
-        statement => "SELECT p.id, p.created_at, p.date_edited, p.body, p.title, p.visibility, p.primary_image_id, u.username, t.tag_id as tag FROM posts p LEFT JOIN users u ON u.id = p.user_id LEFT JOIN post_tag t ON p.id = t.post_id WHERE p.date_edited > :sql_last_value ORDER BY p.date_edited;"
+        statement => "SELECT p.id, p.created_at, p.date_edited, p.body, p.title, p.visibility, m.media_url, u.username, t.tag_id as tag FROM posts p LEFT JOIN users u ON u.id = p.user_id LEFT JOIN post_tag t ON p.id = t.post_id LEFT JOIN media m ON p.id = m.post_id WHERE p.date_edited > :sql_last_value ORDER BY p.date_edited;"
         use_column_value => true
         tracking_column => "date_edited" 
         last_run_metadata_path => "/usr/share/logstash/.logstash-content_jdbc_last_run"
@@ -97,7 +97,7 @@ data:
           map['title'] ||= event.get('title')
           map['body'] ||= event.get('body')
           map['visibility'] ||= event.get('visibility')
-          map['primary_image'] ||= event.get('primary_image')
+          map['primary_image'] ||= event.get('media_url')
           map['username'] ||= event.get('username')
           map['tags'] ||= []
           map['tags'] << {'name' => event.get('tag')}
